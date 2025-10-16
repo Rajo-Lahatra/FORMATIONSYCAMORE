@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Formulaire - Attentes Formation Fiscalité Minière</title>
+  <style>
+    :root {
+      --sun: #fba519;
+      --cocoa-bean: #48281b;
+      --french-gray: #bcbdc0;
+      --tulip-tree: #e8a73d;
+      --almond-frost: #8b776a;
+      --quincy: #654530;
+      --fuel-yellow: #eea125;
+      --millbrook: #5a3e30;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--french-gray);
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(72,40,27,0.2);
+      border-left: 8px solid var(--sun);
+    }
+
+    .logo {
+      display: block;
+      margin: 0 auto 20px auto;
+      max-width: 180px;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--cocoa-bean);
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: var(--millbrook);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid var(--almond-frost);
+      border-radius: 4px;
+      background-color: #fdfdfd;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      background-color: var(--fuel-yellow);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: var(--tulip-tree);
+    }
+
+    .section-title {
+      margin-top: 30px;
+      font-size: 18px;
+      color: var(--quincy);
+      border-bottom: 1px solid var(--almond-frost);
+      padding-bottom: 5px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="logo.png" alt="Logo du cabinet" class="logo" />
+    <h1>Préparation à la Formation - Fiscalité Minière</h1>
+
+    <form id="formation-form" name="attentes-formation">
+      
+      <p class="hidden">
+        <label>Ne pas remplir ce champ : <input name="bot-field" /></label>
+      </p>
+
+      <div class="section-title">Informations du participant</div>
+
+      <label for="prenom">Prénom</label>
+      <input type="text" id="prenom" name="prenom" required />
+
+      <label for="nom">Nom</label>
+      <input type="text" id="nom" name="nom" required />
+
+      <label for="telephone">Téléphone</label>
+      <input type="tel" id="telephone" name="telephone" required />
+
+      <label for="email">Adresse e-mail</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="fonction">Fonction chez Sycamore</label>
+      <select id="fonction" name="fonction" required onchange="toggleAutreFonction(this)">
+        <option value="">-- Sélectionner --</option>
+        <option value="Comptabilité">Comptabilité</option>
+        <option value="Finance">Finance</option>
+        <option value="Juridique">Juridique</option>
+        <option value="Conformité">Conformité</option>
+        <option value="Autre">Autre</option>
+      </select>
+
+      <div id="autre-fonction-container" class="hidden">
+        <label for="autre-fonction">Veuillez préciser votre fonction</label>
+        <input type="text" id="autre-fonction" name="autre-fonction" />
+      </div>
+
+      <div class="section-title">Vos attentes pour la formation</div>
+
+      <label for="niveau">Niveau de connaissance actuel en fiscalité minière</label>
+      <select id="niveau" name="niveau" required>
+        <option value="">-- Sélectionner --</option>
+        <option value="Débutant">Débutant</option>
+        <option value="Intermédiaire">Intermédiaire</option>
+        <option value="Avancé">Avancé</option>
+      </select>
+
+      <label for="attentes">Quelles sont vos attentes principales pour cette formation ?</label>
+      <textarea id="attentes" name="attentes" rows="5" required></textarea>
+
+      <label for="questions">Avez-vous des questions spécifiques ou des cas pratiques que vous souhaitez aborder ?</label>
+      <textarea id="questions" name="questions" rows="4"></textarea>
+
+      <button type="submit">Envoyer mes attentes</button>
+    </form>
+  </div>
+
+  <script>
+    function toggleAutreFonction(select) {
+      const container = document.getElementById("autre-fonction-container");
+      if (select.value === "Autre") {
+        container.classList.remove("hidden");
+      } else {
+        container.classList.add("hidden");
+        document.getElementById("autre-fonction").value = "";
+      }
+    }
+
+    const form = document.getElementById('formation-form');
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault(); // Empêche l'envoi classique du formulaire
+
+      const button = form.querySelector('button[type="submit"]');
+      const originalButtonText = button.textContent;
+      button.textContent = 'Envoi en cours...';
+      button.disabled = true;
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      // On s'assure que le champ "bot-field" n'est pas rempli
+      if (data['bot-field']) {
+        console.log("Détection de bot, soumission ignorée.");
+        return; // Soumission silencieuse
+      }
+
+      try {
+        const response = await fetch('/api/submit-form', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+          // Si la soumission a réussi, rediriger vers la page de remerciement
+          window.location.href = '/thank-you.html';
+        } else {
+          // Gérer les erreurs venant du serveur (ex: erreur 500)
+          alert('Une erreur est survenue lors de la soumission. Veuillez réessayer.');
+          button.textContent = originalButtonText;
+          button.disabled = false;
+        }
+      } catch (error) {
+        // Gérer les erreurs de réseau (ex: pas de connexion)
+        console.error('Erreur:', error);
+        alert('Une erreur de réseau est survenue. Veuillez vérifier votre connexion et réessayer.');
+        button.textContent = originalButtonText;
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
