@@ -1,20 +1,48 @@
-// api/submit-form.js
+// api/submit-form.js (CommonJS, compatible Vercel Functions)
 const { createClient } = require('@supabase/supabase-js');
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';
 
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-  console.warn('[submit-form] Variables SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY manquantes.');
+function cors(res) {
+  res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-  auth: { persistSession: false },
-});
+function getIp(req) {
+  return (
+    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+    req.headers['x-real-ip'] ||
+    req.connection?.remoteAddress ||
+    req.socket?.remoteAddress ||
+    null
+  );
+}
 
-// ———————————————————————————————————————————————————————————————
-// Outils
+// Lecture fiable du corps JSON (req.body peut être undefined)
+async function readJsonBody(req) {
+  return new Promise((resolve, reject) => {
+    let data = '';
+    req.on('data', chunk => { data += chunk; });
+    req.on('end', () => {
+      try {
+        if (!data) return resolve({});
+        const ct = req.headers['content-type'] || '';
+        if (ct.includes('application/json')) {
+          return resolve(JSON.parse(data));
+        }
+        // Si ce n'est pas du JSON, tente quand même un parse “best effort”
+        try { return resolve(JSON.parse(data)); } catch { return resolve({ raw: data }); }
+      } catch (e) {
+        reject(e);
+      }
+    });
+    req.on('error', reject);
+  });
+}
+
 const intOrNull = (v, min, max) => {
   if (v === undefined || v === null || v === '') return null;
   const n = Number(v);
@@ -24,40 +52,43 @@ const intOrNull = (v, min, max) => {
   return n;
 };
 
-const emptyToNull = (v) => (v === undefined || v === '' ? null : v);
+const emptyToNull = (v) => (v === undefined || v === '' ? null : String(v));
 
-function cors(res) {
-  // CORS basique
-  res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+let supabase = null;
+function getSupabase() {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('Variables SUPABASE_URL et/ou SUPABASE_SERVICE_ROLE_KEY manquantes.');
+  }
+  if (!supabase) {
+    supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+      auth: { persistSession: false },
+    });
+  }
+  return supabase;
 }
 
-function getIp(req) {
-  return (
-    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-    req.connection?.remoteAddress ||
-    req.socket?.remoteAddress ||
-    null
-  );
-}
-
-// ———————————————————————————————————————————————————————————————
-// Handler
 module.exports = async (req, res) => {
-  cors(res);
-
-  if (req.method === 'OPTIONS') {
-    return res.status(204).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Méthode non autorisée' });
-  }
-
   try {
-    const data = req.body || {};
-    // Honeypot anti-bot
+    cors(res);
+
+    if (req.method === 'OPTIONS') {
+      return res.status(204).end();
+    }
+
+    if (req.method !== 'POST') {
+      return res.status(405).json({ error: 'Méthode non autorisée' });
+    }
+
+    // Parse corps JSON de manière fiable
+    let data = {};
+    try {
+      data = await readJsonBody(req);
+    } catch (parseErr) {
+      console.error('[submit-form] JSON parse error:', parseErr);
+      return res.status(400).json({ error: 'Corps de requête invalide (JSON attendu)' });
+    }
+
+    // Honeypot
     if (data['bot-field']) {
       return res.status(200).json({ ok: true, bot: true });
     }
@@ -70,9 +101,9 @@ module.exports = async (req, res) => {
       }
     }
 
-    // Normalisation des valeurs
+    // Prépare la ligne pour insertion
     const row = {
-      // Métadonnées de session
+      // Métadonnées
       formation_titre: emptyToNull(data.formation_titre) || 'Fiscalité minière – Sycamore',
       formation_modalite: emptyToNull(data.formation_modalite) || 'En ligne',
       formation_debut: emptyToNull(data.formation_debut) || '2025-10-20',
@@ -110,10 +141,8 @@ module.exports = async (req, res) => {
       anim_maitrise: intOrNull(data.anim_maitrise, 1, 5),
       anim_interaction: intOrNull(data.anim_interaction, 1, 5),
 
-      // Résultats
+      // Résultats & textes
       res_objectifs: intOrNull(data.res_objectifs, 1, 5),
-
-      // Textes libres
       competences: emptyToNull(data.competences),
       points_forts: emptyToNull(data.points_forts),
       ameliorations: emptyToNull(data.ameliorations),
@@ -127,24 +156,27 @@ module.exports = async (req, res) => {
       remote_addr: getIp(req),
     };
 
-    // Insertion
-    const { error } = await supabase
-      .from('evaluation_responses')
-      .insert([row]);
-
-    if (error) {
-      console.error('[submit-form] Supabase insert error:', error);
-      return res.status(500).json({ error: 'Erreur d’insertion Supabase', details: error.message });
+    // Vérifie les variables d'env ici (message explicite en cas d'oubli)
+    let sb;
+    try {
+      sb = getSupabase();
+    } catch (envErr) {
+      console.error('[submit-form] ENV error:', envErr.message);
+      return res.status(500).json({ error: 'Configuration serveur incomplète (Supabase)', details: envErr.message });
     }
 
-    // Redirection vers la page de remerciement
-    // Vercel/Netlify acceptent 302 + Location
+    // Insertion Supabase
+    const { error } = await sb.from('evaluation_responses').insert([row]);
+    if (error) {
+      console.error('[submit-form] Supabase insert error:', error);
+      return res.status(500).json({ error: 'Erreur d’insertion Supabase', details: error.message || String(error) });
+    }
+
+    // Redirection “merci”
     res.writeHead(302, { Location: '/thank-you.html' });
     return res.end();
-    // — Ou, si vous préférez rester en JSON :
-    // return res.status(200).json({ ok: true });
   } catch (e) {
-    console.error('[submit-form] Exception:', e);
+    console.error('[submit-form] Uncaught error:', e);
     return res.status(500).json({ error: 'Erreur serveur', details: e.message });
   }
 };
