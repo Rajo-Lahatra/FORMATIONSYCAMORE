@@ -56,17 +56,23 @@ export default async function handler(req, res) {
     // Parse JSON
     let data = {};
     try { data = await readJsonBody(req); }
-    catch { return res.status(400).json({ error: 'Corps JSON invalide' }); }
+    catch (e) {
+  return res.status(400).json({ error: 'Corps JSON invalide', details: String(e) });
+}
 
     // Honeypot
     if (data['bot-field']) return res.status(200).json({ ok: true, bot: true });
 
     // Champs requis
-    for (const k of ['prenom', 'nom', 'email', 'fonction']) {
-      if (!data[k] || String(data[k]).trim() === '') {
-        return res.status(400).json({ error: `Le champ requis "${k}" est manquant.` });
-      }
-    }
+    const required = ['prenom', 'nom', 'email', 'fonction'];
+const missing = required.filter(k => !data[k] || String(data[k]).trim() === '');
+if (missing.length) {
+  return res.status(400).json({
+    error: 'Champs requis manquants',
+    missingFields: missing,
+    receivedKeys: Object.keys(data)   // visibilité sur ce qui a vraiment été reçu
+  });
+}
 
     // Env
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
