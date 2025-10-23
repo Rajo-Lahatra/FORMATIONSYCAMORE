@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "framework": null,
+  "redirects": [
+    { "source": "/thank-you", "destination": "/thank-you.html", "permanent": false }
+  ]
+}
