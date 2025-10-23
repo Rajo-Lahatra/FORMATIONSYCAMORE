@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Formulaire - Attentes Formation Fiscalité Minière</title>
+  <title>Évaluation de la formation – Fiscalité minière (20–24 oct. 2025)</title>
   <style>
     :root {
       --sun: #fba519;
@@ -24,7 +24,7 @@
     }
 
     .container {
-      max-width: 700px;
+      max-width: 880px;
       margin: auto;
       background-color: #fff;
       padding: 30px;
@@ -42,12 +42,20 @@
     h1 {
       text-align: center;
       color: var(--cocoa-bean);
-      margin-bottom: 30px;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--millbrook);
+      margin-top: 0;
+      margin-bottom: 24px;
+      font-size: 14px;
     }
 
     label {
       display: block;
-      margin-top: 15px;
+      margin-top: 12px;
       font-weight: bold;
       color: var(--millbrook);
     }
@@ -61,12 +69,77 @@
       background-color: #fdfdfd;
     }
 
-    textarea {
-      resize: vertical;
+    textarea { resize: vertical; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .section-title {
+      margin-top: 28px;
+      font-size: 18px;
+      color: var(--quincy);
+      border-bottom: 1px solid var(--almond-frost);
+      padding-bottom: 6px;
+    }
+
+    .help {
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+      font-weight: normal;
+    }
+
+    .likert {
+      display: grid;
+      grid-template-columns: 2fr repeat(5, 1fr);
+      gap: 8px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px dashed #e9e9e9;
+      font-size: 14px;
+    }
+
+    .likert > div:first-child { font-weight: 600; color: #333; }
+    .likert label {
+      display: flex; align-items: center; justify-content: center;
+      font-weight: normal; color: #333;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #fff7e6;
+      color: #8a5a00;
+      border: 1px solid #ffd28e;
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 12px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .muted { color: #666; font-size: 12px; }
+
+    .row { margin-top: 10px; }
+
+    .hidden { display: none; }
+
+    .actions {
+      margin-top: 24px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     button {
-      margin-top: 20px;
       padding: 12px 20px;
       background-color: var(--fuel-yellow);
       color: white;
@@ -77,80 +150,291 @@
       transition: background-color 0.3s ease;
     }
 
-    button:hover {
-      background-color: var(--tulip-tree);
+    button.secondary {
+      background: #e7e7e7;
+      color: #333;
     }
 
-    .section-title {
-      margin-top: 30px;
-      font-size: 18px;
-      color: var(--quincy);
-      border-bottom: 1px solid var(--almond-frost);
-      padding-bottom: 5px;
+    button:hover { background-color: var(--tulip-tree); }
+    button.secondary:hover { background: #dcdcdc; }
+
+    small.note {
+      display: block;
+      color: #666;
+      margin-top: 6px;
+      font-size: 12px;
     }
 
-    .hidden {
-      display: none;
+    .nps {
+      display: grid;
+      grid-template-columns: repeat(11, 1fr);
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .nps label {
+      display: block; text-align: center; font-weight: normal; color: #333;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <img src="logo.png" alt="Logo du cabinet" class="logo" />
-    <h1>Préparation à la Formation - Fiscalité Minière</h1>
+    <h1>Évaluation de la formation – Fiscalité minière</h1>
+    <p class="subtitle">Session en ligne • 20–24 octobre 2025 • Sycamore Mine Guinée SAU</p>
 
-    <form id="formation-form" name="attentes-formation">
-      
+    <form id="evaluation-form" name="evaluation-formation" autocomplete="on" novalidate>
+      <!-- Honeypot anti-bot -->
       <p class="hidden">
         <label>Ne pas remplir ce champ : <input name="bot-field" /></label>
       </p>
 
+      <!-- Métadonnées de session -->
+      <input type="hidden" name="formation_titre" value="Fiscalité minière – Sycamore" />
+      <input type="hidden" name="formation_modalite" value="En ligne" />
+      <input type="hidden" name="formation_debut" value="2025-10-20" />
+      <input type="hidden" name="formation_fin" value="2025-10-24" />
+
+      <!-- Identité du répondant -->
       <div class="section-title">Informations du participant</div>
+      <div class="grid-2">
+        <div>
+          <label for="prenom">Prénom</label>
+          <input type="text" id="prenom" name="prenom" required />
+        </div>
+        <div>
+          <label for="nom">Nom</label>
+          <input type="text" id="nom" name="nom" required />
+        </div>
+      </div>
 
-      <label for="prenom">Prénom</label>
-      <input type="text" id="prenom" name="prenom" required />
-
-      <label for="nom">Nom</label>
-      <input type="text" id="nom" name="nom" required />
-
-      <label for="telephone">Téléphone</label>
-      <input type="tel" id="telephone" name="telephone" required />
-
-      <label for="email">Adresse e-mail</label>
-      <input type="email" id="email" name="email" required />
-
-      <label for="fonction">Fonction chez Sycamore</label>
-      <select id="fonction" name="fonction" required onchange="toggleAutreFonction(this)">
-        <option value="">-- Sélectionner --</option>
-        <option value="Comptabilité">Comptabilité</option>
-        <option value="Finance">Finance</option>
-        <option value="Juridique">Juridique</option>
-        <option value="Conformité">Conformité</option>
-        <option value="Autre">Autre</option>
-      </select>
+      <div class="grid-3">
+        <div>
+          <label for="email">Adresse e-mail</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div>
+          <label for="telephone">Téléphone</label>
+          <input type="tel" id="telephone" name="telephone" />
+        </div>
+        <div>
+          <label for="fonction">Fonction / Département</label>
+          <select id="fonction" name="fonction" required onchange="toggleAutreFonction(this)">
+            <option value="">-- Sélectionner --</option>
+            <option>Comptabilité</option>
+            <option>Finance</option>
+            <option>Juridique</option>
+            <option>Conformité</option>
+            <option>RH / Paie</option>
+            <option>Direction</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </div>
+      </div>
 
       <div id="autre-fonction-container" class="hidden">
         <label for="autre-fonction">Veuillez préciser votre fonction</label>
-        <input type="text" id="autre-fonction" name="autre-fonction" />
+        <input type="text" id="autre-fonction" name="autre_fonction" />
       </div>
 
-      <div class="section-title">Vos attentes pour la formation</div>
+      <!-- Organisation & logistique -->
+      <div class="section-title">Organisation & logistique <span class="badge">en ligne</span></div>
+      <div class="likert">
+        <div>Clarté des objectifs communiqués</div>
+        <label><input type="radio" name="org_objectifs" value="1" required/> 1</label>
+        <label><input type="radio" name="org_objectifs" value="2"/> 2</label>
+        <label><input type="radio" name="org_objectifs" value="3"/> 3</label>
+        <label><input type="radio" name="org_objectifs" value="4"/> 4</label>
+        <label><input type="radio" name="org_objectifs" value="5"/> 5</label>
+      </div>
+      <div class="likert">
+        <div>Qualité de la plateforme (audio, vidéo, accès)</div>
+        <label><input type="radio" name="org_plateforme" value="1" required/> 1</label>
+        <label><input type="radio" name="org_plateforme" value="2"/> 2</label>
+        <label><input type="radio" name="org_plateforme" value="3"/> 3</label>
+        <label><input type="radio" name="org_plateforme" value="4"/> 4</label>
+        <label><input type="radio" name="org_plateforme" value="5"/> 5</label>
+      </div>
+      <div class="likert">
+        <div>Rythme & gestion du temps (20–24 oct.)</div>
+        <label><input type="radio" name="org_rythme" value="1" required/> 1</label>
+        <label><input type="radio" name="org_rythme" value="2"/> 2</label>
+        <label><input type="radio" name="org_rythme" value="3"/> 3</label>
+        <label><input type="radio" name="org_rythme" value="4"/> 4</label>
+        <label><input type="radio" name="org_rythme" value="5"/> 5</label>
+      </div>
 
-      <label for="niveau">Niveau de connaissance actuel en fiscalité minière</label>
-      <select id="niveau" name="niveau" required>
-        <option value="">-- Sélectionner --</option>
-        <option value="Débutant">Débutant</option>
-        <option value="Intermédiaire">Intermédiaire</option>
-        <option value="Avancé">Avancé</option>
-      </select>
+      <!-- Contenu & pédagogie -->
+      <div class="section-title">Contenu & pédagogie</div>
+      <div class="likert">
+        <div>Adéquation du contenu au contexte minier guinéen</div>
+        <label><input type="radio" name="cont_adequation" value="1" required/> 1</label>
+        <label><input type="radio" name="cont_adequation" value="2"/> 2</label>
+        <label><input type="radio" name="cont_adequation" value="3"/> 3</label>
+        <label><input type="radio" name="cont_adequation" value="4"/> 4</label>
+        <label><input type="radio" name="cont_adequation" value="5"/> 5</label>
+      </div>
+      <div class="likert">
+        <div>Équilibre théorie / cas pratiques</div>
+        <label><input type="radio" name="cont_equilibre" value="1" required/> 1</label>
+        <label><input type="radio" name="cont_equilibre" value="2"/> 2</label>
+        <label><input type="radio" name="cont_equilibre" value="3"/> 3</label>
+        <label><input type="radio" name="cont_equilibre" value="4"/> 4</label>
+        <label><input type="radio" name="cont_equilibre" value="5"/> 5</label>
+      </div>
+      <div class="likert">
+        <div>Qualité des supports (slides, schémas, tableaux)</div>
+        <label><input type="radio" name="cont_supports" value="1" required/> 1</label>
+        <label><input type="radio" name="cont_supports" value="2"/> 2</label>
+        <label><input type="radio" name="cont_supports" value="3"/> 3</label>
+        <label><input type="radio" name="cont_supports" value="4"/> 4</label>
+        <label><input type="radio" name="cont_supports" value="5"/> 5</label>
+      </div>
 
-      <label for="attentes">Quelles sont vos attentes principales pour cette formation ?</label>
-      <textarea id="attentes" name="attentes" rows="5" required></textarea>
+      <!-- Modules clés du programme -->
+      <div class="section-title">Auto-évaluation par thématique (1 = insuffisant, 5 = excellent)</div>
+      <div class="muted">Merci d’évaluer l’apport de la formation sur chaque thème abordé.</div>
 
-      <label for="questions">Avez-vous des questions spécifiques ou des cas pratiques que vous souhaitez aborder ?</label>
-      <textarea id="questions" name="questions" rows="4"></textarea>
+      <!-- Générateur de lignes Likert : thèmes principaux -->
+      <div id="themes">
+        <!-- RTS -->
+        <div class="likert">
+          <div>RTS – salaires (assiette, tranches, échéances)</div>
+          <label><input type="radio" name="t_rts" value="1" required/>1</label>
+          <label><input type="radio" name="t_rts" value="2"/>2</label>
+          <label><input type="radio" name="t_rts" value="3"/>3</label>
+          <label><input type="radio" name="t_rts" value="4"/>4</label>
+          <label><input type="radio" name="t_rts" value="5"/>5</label>
+        </div>
+        <!-- VF -->
+        <div class="likert">
+          <div>VF – Versement forfaitaire (assiette, exonérations)</div>
+          <label><input type="radio" name="t_vf" value="1" required/>1</label>
+          <label><input type="radio" name="t_vf" value="2"/>2</label>
+          <label><input type="radio" name="t_vf" value="3"/>3</label>
+          <label><input type="radio" name="t_vf" value="4"/>4</label>
+          <label><input type="radio" name="t_vf" value="5"/>5</label>
+        </div>
+        <!-- TVA -->
+        <div class="likert">
+          <div>TVA – opérations, déduction, précompte, auto-liquidation</div>
+          <label><input type="radio" name="t_tva" value="1" required/>1</label>
+          <label><input type="radio" name="t_tva" value="2"/>2</label>
+          <label><input type="radio" name="t_tva" value="3"/>3</label>
+          <label><input type="radio" name="t_tva" value="4"/>4</label>
+          <label><input type="radio" name="t_tva" value="5"/>5</label>
+        </div>
+        <!-- Remboursement crédit TVA -->
+        <div class="likert">
+          <div>Remboursement de crédit de TVA – conditions & dossiers</div>
+          <label><input type="radio" name="t_tva_remb" value="1" required/>1</label>
+          <label><input type="radio" name="t_tva_remb" value="2"/>2</label>
+          <label><input type="radio" name="t_tva_remb" value="3"/>3</label>
+          <label><input type="radio" name="t_tva_remb" value="4"/>4</label>
+          <label><input type="radio" name="t_tva_remb" value="5"/>5</label>
+        </div>
+        <!-- IS -->
+        <div class="likert">
+          <div>IS – détermination du résultat fiscal & retraitements</div>
+          <label><input type="radio" name="t_is" value="1" required/>1</label>
+          <label><input type="radio" name="t_is" value="2"/>2</label>
+          <label><input type="radio" name="t_is" value="3"/>3</label>
+          <label><input type="radio" name="t_is" value="4"/>4</label>
+          <label><input type="radio" name="t_is" value="5"/>5</label>
+        </div>
+        <!-- RNS -->
+        <div class="likert">
+          <div>RNS – prestataires non-résidents & conventions</div>
+          <label><input type="radio" name="t_rns" value="1" required/>1</label>
+          <label><input type="radio" name="t_rns" value="2"/>2</label>
+          <label><input type="radio" name="t_rns" value="3"/>3</label>
+          <label><input type="radio" name="t_rns" value="4"/>4</label>
+          <label><input type="radio" name="t_rns" value="5"/>5</label>
+        </div>
+        <!-- PF -->
+        <div class="likert">
+          <div>PF – prélèvement forfaitaire sur achats locaux</div>
+          <label><input type="radio" name="t_pf" value="1" required/>1</label>
+          <label><input type="radio" name="t_pf" value="2"/>2</label>
+          <label><input type="radio" name="t_pf" value="3"/>3</label>
+          <label><input type="radio" name="t_pf" value="4"/>4</label>
+          <label><input type="radio" name="t_pf" value="5"/>5</label>
+        </div>
+      </div>
 
-      <button type="submit">Envoyer mes attentes</button>
+      <!-- Animation -->
+      <div class="section-title">Animation & interaction</div>
+      <div class="likert">
+        <div>Maîtrise du sujet par les formateurs</div>
+        <label><input type="radio" name="anim_maitrise" value="1" required/>1</label>
+        <label><input type="radio" name="anim_maitrise" value="2"/>2</label>
+        <label><input type="radio" name="anim_maitrise" value="3"/>3</label>
+        <label><input type="radio" name="anim_maitrise" value="4"/>4</label>
+        <label><input type="radio" name="anim_maitrise" value="5"/>5</label>
+      </div>
+      <div class="likert">
+        <div>Interactions, questions-réponses, études de cas</div>
+        <label><input type="radio" name="anim_interaction" value="1" required/>1</label>
+        <label><input type="radio" name="anim_interaction" value="2"/>2</label>
+        <label><input type="radio" name="anim_interaction" value="3"/>3</label>
+        <label><input type="radio" name="anim_interaction" value="4"/>4</label>
+        <label><input type="radio" name="anim_interaction" value="5"/>5</label>
+      </div>
+
+      <!-- Résultats & transfert au poste -->
+      <div class="section-title">Résultats perçus</div>
+      <div class="likert">
+        <div>Objectifs atteints (globalement)</div>
+        <label><input type="radio" name="res_objectifs" value="1" required/>1</label>
+        <label><input type="radio" name="res_objectifs" value="2"/>2</label>
+        <label><input type="radio" name="res_objectifs" value="3"/>3</label>
+        <label><input type="radio" name="res_objectifs" value="4"/>4</label>
+        <label><input type="radio" name="res_objectifs" value="5"/>5</label>
+      </div>
+      <label for="competences">Compétences concrètes que vous pouvez appliquer dès maintenant</label>
+      <textarea id="competences" name="competences" rows="3" placeholder="Ex. : préparer une DMU TVA, reconstituer une base RTS/VF, monter un dossier de remboursement de crédit TVA…"></textarea>
+
+      <!-- NPS -->
+      <div class="section-title">Recommandation (NPS)</div>
+      <label>Sur une échelle de 0 à 10, quelle est la probabilité que vous recommandiez cette formation à un collègue ?</label>
+      <div class="nps">
+        <!-- 0..10 -->
+        <label><input type="radio" name="nps" value="0" required/>0</label>
+        <label><input type="radio" name="nps" value="1"/>1</label>
+        <label><input type="radio" name="nps" value="2"/>2</label>
+        <label><input type="radio" name="nps" value="3"/>3</label>
+        <label><input type="radio" name="nps" value="4"/>4</label>
+        <label><input type="radio" name="nps" value="5"/>5</label>
+        <label><input type="radio" name="nps" value="6"/>6</label>
+        <label><input type="radio" name="nps" value="7"/>7</label>
+        <label><input type="radio" name="nps" value="8"/>8</label>
+        <label><input type="radio" name="nps" value="9"/>9</label>
+        <label><input type="radio" name="nps" value="10"/>10</label>
+      </div>
+      <small class="note">0 = “Pas du tout probable” • 10 = “Extrêmement probable”</small>
+
+      <!-- Points forts / améliorations -->
+      <div class="section-title">Feedback qualitatif</div>
+      <label for="points_forts">Ce que vous avez le plus apprécié</label>
+      <textarea id="points_forts" name="points_forts" rows="3"></textarea>
+
+      <label for="ameliorations">Axes d’amélioration (contenu, rythme, cas, outils…)</label>
+      <textarea id="ameliorations" name="ameliorations" rows="3"></textarea>
+
+      <label for="besoins_suivi">Besoins d’accompagnement / sujets à approfondir (post-formation)</label>
+      <textarea id="besoins_suivi" name="besoins_suivi" rows="3"></textarea>
+
+      <!-- Consentements & suite -->
+      <div class="section-title">Suite & consentements</div>
+      <label><input type="checkbox" name="souhaite_attestation" value="oui" /> Je souhaite recevoir une attestation de participation.</label>
+      <label><input type="checkbox" name="souhaite_supports" value="oui" /> Je souhaite recevoir les supports mis à jour.</label>
+      <label><input type="checkbox" name="contact_suivi" value="oui" /> J’accepte d’être contacté(e) pour un suivi ou des formations ciblées.</label>
+
+      <div class="actions">
+        <button type="submit">Envoyer mon évaluation</button>
+        <button type="reset" class="secondary">Réinitialiser</button>
+      </div>
+
+      <small class="note">Les données recueillies sont utilisées aux seules fins d’amélioration de la formation et de suivi des participants.</small>
     </form>
   </div>
 
@@ -161,50 +445,52 @@
         container.classList.remove("hidden");
       } else {
         container.classList.add("hidden");
-        document.getElementById("autre-fonction").value = "";
+        const f = document.getElementById("autre-fonction");
+        if (f) f.value = "";
       }
     }
 
-    const form = document.getElementById('formation-form');
+    const form = document.getElementById('evaluation-form');
+
+    function formToJSON(formEl) {
+      const fd = new FormData(formEl);
+      // Si plusieurs champs radio manquent, le required HTML5 gère côté client
+      return Object.fromEntries(fd.entries());
+    }
+
     form.addEventListener('submit', async (event) => {
-      event.preventDefault(); // Empêche l'envoi classique du formulaire
+      event.preventDefault();
 
       const button = form.querySelector('button[type="submit"]');
       const originalButtonText = button.textContent;
-      button.textContent = 'Envoi en cours...';
+      button.textContent = 'Envoi en cours…';
       button.disabled = true;
 
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData.entries());
+      const data = formToJSON(form);
 
-      // On s'assure que le champ "bot-field" n'est pas rempli
+      // Honeypot
       if (data['bot-field']) {
-        console.log("Détection de bot, soumission ignorée.");
-        return; // Soumission silencieuse
+        console.warn("Détection de bot, soumission ignorée.");
+        return;
       }
 
       try {
-        const response = await fetch('/api/submit-form', {
+        const response = await fetch('/api/submit-evaluation', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         });
 
         if (response.ok) {
-          // Si la soumission a réussi, rediriger vers la page de remerciement
           window.location.href = '/thank-you.html';
         } else {
-          // Gérer les erreurs venant du serveur (ex: erreur 500)
           alert('Une erreur est survenue lors de la soumission. Veuillez réessayer.');
           button.textContent = originalButtonText;
           button.disabled = false;
         }
       } catch (error) {
-        // Gérer les erreurs de réseau (ex: pas de connexion)
         console.error('Erreur:', error);
-        alert('Une erreur de réseau est survenue. Veuillez vérifier votre connexion et réessayer.');
+        alert('Erreur réseau. Vérifiez votre connexion puis réessayez.');
         button.textContent = originalButtonText;
         button.disabled = false;
       }
